@@ -5,7 +5,7 @@ on:
     branches: [ "main" ]
 
 env:
-  IMAGE_NAME: almuko/helmtest
+  IMAGE_NAME: bekovkanat/helmtest
 
 jobs:
   build-and-push:
