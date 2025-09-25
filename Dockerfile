@@ -1,13 +1,14 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ .Chart.Name }}
-  labels:
-    app: {{ .Chart.Name }}
-spec:
-  type: {{ .Values.service.type }}
-  selector:
-    app: {{ .Chart.Name }}
-  ports:
-    - port: {{ .Values.service.port }}
-      targetPort: {{ .Values.service.targetPort }}
+# build
+FROM golang:1.24-alpine AS build
+WORKDIR /app
+COPY go.mod ./
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o helmtest main.go
+
+# runtime
+FROM alpine:3.19
+WORKDIR /app
+COPY --from=build /app/helmtest .
+EXPOSE 8080
+CMD ["./helmtest"]
